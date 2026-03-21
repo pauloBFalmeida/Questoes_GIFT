@@ -73,6 +73,25 @@
             </button>
         </div>
 
+         <!-- Info Text -->
+        <div class="flex flex-col items-center gap-3 mb-8">
+            <p class="text-sm text-slate-500 flex items-center gap-1.5">
+                <i data-lucide="shuffle" class="w-4 h-4"></i>
+                Ordem das respotas em uma pergunta é aleatória (e muda cada vez que o botão geração é clicado) :)
+            </p>
+            
+            <!-- Warning Alert -->
+            <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 max-w-2xl w-full">
+                <div class="flex gap-3">
+                    <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5"></i>
+                    <div class="text-sm text-amber-800">
+                        <p class="font-semibold mb-1">Cuidado! Verifique se não tem algum erro no código GIFT gerado.</p>
+                        <p>Este site é apenas uma ferramenta para facilitar a criação das perguntas.<br>Não me responsabilizo por erros caso o arquivo gerado não seja revisado antes do uso.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Output Section (Hidden by default) -->
         <div id="outputSection" class="hidden bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
             <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
