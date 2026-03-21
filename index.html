@@ -88,10 +88,10 @@
                 </div>
             </div>
             <div class="relative">
-                <textarea id="outputArea" readonly 
-                    class="w-full h-96 p-6 font-mono text-sm bg-slate-50 text-slate-800 resize-none focus:outline-none"
-                    placeholder="O formato GIFT gerado aparecerá aqui..."></textarea>
-                <div id="copyFeedback" class="absolute top-4 right-4 bg-emerald-500 text-white text-xs px-3 py-1 rounded-full opacity-0 transition-opacity">
+                <div id="outputArea" 
+                    class="w-full h-96 p-6 font-mono text-sm bg-slate-50 text-slate-800 overflow-y-auto whitespace-pre-wrap break-all"
+                    placeholder="O formato GIFT gerado aparecerá aqui..."></div>
+                <div id="copyFeedback" class="absolute top-4 right-4 bg-emerald-500 text-white text-xs px-3 py-1 rounded-full opacity-0 transition-opacity pointer-events-none">
                     Copiado!
                 </div>
             </div>
@@ -204,6 +204,40 @@
             updateAlternativeInputs(i);
         }
 
+        // Colorize GIFT code for display
+        function colorizeGIFT(code) {
+            const lines = code.split('\n');
+            return lines.map(line => {
+                const trimmed = line.trim();
+                if (trimmed.startsWith('::Cap') || trimmed === '}' || trimmed === '{') {
+                    // Brackets - Gray
+                    return `<span class="text-slate-500 font-bold">${escapeHtml(line)}</span>`;
+                } else if (trimmed.startsWith('::')) {
+                    // Header line - Blue
+                    return `<span class="text-blue-600 font-semibold">${escapeHtml(line)}</span>`;
+                } else if (trimmed.startsWith('=')) {
+                    // Correct answer - Green
+                    return `<span class="text-emerald-600 font-medium">${escapeHtml(line)}</span>`;
+                } else if (trimmed.startsWith('~')) {
+                    // Wrong answer - Red
+                    return `<span class="text-red-500">${escapeHtml(line)}</span>`;
+                } else {
+                    // Other lines (question text, etc)
+                    return `<span class="text-slate-800">${escapeHtml(line)}</span>`;
+                }
+            }).join('\n');
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Store raw GIFT content for copy/download
+        let rawGIFTContent = '';
+
         // Generate GIFT File
         function generateGIFT() {
             const chapterNum = document.getElementById('chapterNumber').value || '1';
@@ -284,12 +318,16 @@
                 return;
             }
 
+            // Store raw content for copy/download operations
+            rawGIFTContent = giftContent.trim();
+
             // Display output
             const outputSection = document.getElementById('outputSection');
             const outputArea = document.getElementById('outputArea');
             const questionCount = document.getElementById('questionCount');
             
-            outputArea.value = giftContent.trim();
+            // Apply colorization
+            outputArea.innerHTML = colorizeGIFT(rawGIFTContent);
             questionCount.textContent = `${validQuestions} Quest${validQuestions !== 1 ? 'ões' : 'ão'}`;
             outputSection.classList.remove('hidden');
             
@@ -299,7 +337,7 @@
 
         // Download File
         function downloadFile() {
-            const content = document.getElementById('outputArea').value;
+            const content = rawGIFTContent;
             if (!content) return;
 
             const chapterNum = document.getElementById('chapterNumber').value || '1';
@@ -318,14 +356,27 @@
 
         // Copy to Clipboard
         function copyToClipboard() {
-            const outputArea = document.getElementById('outputArea');
-            outputArea.select();
-            document.execCommand('copy');
+            if (!rawGIFTContent) return;
             
-            // Show feedback
-            const feedback = document.getElementById('copyFeedback');
-            feedback.classList.remove('opacity-0');
-            setTimeout(() => feedback.classList.add('opacity-0'), 2000);
+            navigator.clipboard.writeText(rawGIFTContent).then(() => {
+                // Show feedback
+                const feedback = document.getElementById('copyFeedback');
+                feedback.classList.remove('opacity-0');
+                setTimeout(() => feedback.classList.add('opacity-0'), 2000);
+            }).catch(err => {
+                console.error('Erro ao copiar:', err);
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = rawGIFTContent;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                const feedback = document.getElementById('copyFeedback');
+                feedback.classList.remove('opacity-0');
+                setTimeout(() => feedback.classList.add('opacity-0'), 2000);
+            });
         }
 
         // Reset Form
@@ -343,7 +394,8 @@
                 
                 // Hide output
                 document.getElementById('outputSection').classList.add('hidden');
-                document.getElementById('outputArea').value = '';
+                document.getElementById('outputArea').innerHTML = '';
+                rawGIFTContent = '';
             }
         }
 
