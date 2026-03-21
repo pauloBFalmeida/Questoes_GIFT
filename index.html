@@ -229,11 +229,11 @@
             return lines.map(line => {
                 const trimmed = line.trim();
                 if (trimmed.startsWith('::Cap') || trimmed === '}' || trimmed === '{') {
-                    // Brackets - Gray
-                    return `<span class="text-slate-500 font-bold">${escapeHtml(line)}</span>`;
-                } else if (trimmed.startsWith('::')) {
-                    // Header line - Blue
+                    // Header and Brackets - Blue
                     return `<span class="text-blue-600 font-semibold">${escapeHtml(line)}</span>`;
+                // } else if (trimmed.startsWith('::')) {
+                    // // - Gray
+                    // return `<span class="text-slate-500 font-bold">${escapeHtml(line)}</span>`;
                 } else if (trimmed.startsWith('=')) {
                     // Correct answer - Green
                     return `<span class="text-emerald-600 font-medium">${escapeHtml(line)}</span>`;
@@ -296,7 +296,7 @@
                     // ~Wrong answer
                     // }
                     
-                    giftContent += `::${header}\n::${question}\n{\n`;
+                    giftContent += `::${header}\n::${question.trim()}\n{\n`;
                     
                     // // First alternative is correct (=)
                     // giftContent += `    =${alternatives[0]}\n`;
@@ -319,9 +319,9 @@
                     // Itera com a posição correta agora aleatória
                     for (let k = 0; k < alternatives.length; k++) {
                         if (alternatives[k] === correctAnswer) {
-                            giftContent += `=${alternatives[k]}\n`;
+                            giftContent += `=${alternatives[k].trim()}\n`;
                         } else {
-                            giftContent += `~${alternatives[k]}\n`;
+                            giftContent += `~${alternatives[k].trim()}\n`;
                         }
                     }
                     
