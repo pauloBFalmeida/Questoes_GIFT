@@ -123,14 +123,20 @@
                 </div>
             </div>
             <div class="p-6 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row gap-4 justify-between items-center">
-                <p class="text-sm text-slate-600">
-                    <i data-lucide="download" class="w-4 h-4 inline mr-1"></i>
-                    Baixe este código como um arquivo <code class="bg-slate-200 px-1.5 py-0.5 rounded text-xs font-mono">.gift</code>
-                </p>
+                <div class="flex flex-col gap-1">
+                    <p class="text-sm text-slate-600">
+                        <i data-lucide="download" class="w-4 h-4 inline mr-1"></i>
+                        Baixe este código como um arquivo <code class="bg-slate-200 px-1.5 py-0.5 rounded text-xs font-mono">.txt</code>
+                    </p>
+                    <p class="text-sm font-bold text-slate-700">
+                        <!-- <i data-lucide="package" class="w-4 h-4 inline mr-1 text-emerald-600"></i> -->
+                        Lembre de comprimir o txt como zip para enviar no Ava
+                    </p>
+                </div>
                 <button onclick="downloadFile()" 
                     class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-6 rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-200">
                     <i data-lucide="download-cloud" class="w-5 h-5"></i>
-                    Baixar Arquivo GIFT
+                    Baixar Arquivo TXT
                 </button>
             </div>
         </div>
@@ -386,7 +392,7 @@
             if (!content) return;
 
             const chapterNum = document.getElementById('chapterNumber').value || '1';
-            const filename = `capitulo_${chapterNum}_quiz.gift`;
+            const filename = `capitulo_${chapterNum}_quiz.txt`;
             
             const blob = new Blob([content], { type: 'text/plain' });
             const url = window.URL.createObjectURL(blob);
