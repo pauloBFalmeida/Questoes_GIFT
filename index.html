@@ -290,9 +290,11 @@
                 .replace(/(?<!\\)\}/g, '\\}')
                 .replace(/(?<!\\):/g, '\\:')
                 .replace(/(?<!\\)\//g, '\\/')
-                .replace(/\\t/g, '\\t')         // tabs
+                // tabs
+                .replace(/\\t/g, '\\t')
                 .replace('\\/t', '\\t')        
-                .replace('  ', '\\t');          
+                .replace('	', '\\t')
+                .replace('\u0009', '\\t');
         }
 
         // Store raw GIFT content for copy/download
