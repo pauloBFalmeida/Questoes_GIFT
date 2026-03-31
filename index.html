@@ -90,6 +90,14 @@
                     </div>
                 </div>
             </div>
+
+            <p class="text-sm text-slate-500 flex items-center gap-1.5 font-bold">
+                <i data-lucide="check" class="w-4 h-4"></i>
+                Verifique se characteres como
+                 <code class="bg-slate-200 px-1.5 py-0.5 rounded text-xs font-mono">= : % tab</code>
+                 foram trocados corretamente para
+                 <code class="bg-slate-200 px-1.5 py-0.5 rounded text-xs font-mono">\= \: \% \t</code>
+            </p>
         </div>
 
         <!-- Output Section (Hidden by default) -->
@@ -263,6 +271,24 @@
             return div.innerHTML;
         }
 
+        // Formats a text into GIFT syntax
+        function formatText(alternative) {
+            // Normalize literal \t text to a placeholder, escape real tabs, then restore
+            return alternative.trim()
+                .replace(/(?<!\\)=/g, '\\=')
+                .replace(/(?<!\\)~/g, '\\~')
+                .replace(/(?<!\\)#/g, '\\#')
+                .replace(/(?<!\\)@/g, '\\@')
+                .replace(/(?<!\\)%/g, '\\%')
+                .replace(/(?<!\\)\{/g, '\\{')
+                .replace(/(?<!\\)\}/g, '\\}')
+                .replace(/(?<!\\):/g, '\\:')
+                .replace(/(?<!\\)\//g, '\\/')
+                .replace(/\\t/g, '\\t')         // tabs
+                .replace('\\/t', '\\t')        
+                .replace('  ', '\\t');          
+        }
+
         // Store raw GIFT content for copy/download
         let rawGIFTContent = '';
 
@@ -296,26 +322,18 @@
                     const header = `Cap${chapterFormatted}_${i + 1}` ;
                     // const header = `Cap${chapterNum} - Questão ${i + 1}`;
                     
-                    // GIFT Format:
-                    // ::Question Title
-                    // ::Question{
-                    // =Correct answer
-                    // ~Wrong answer
-                    // ~Wrong answer
-                    // ~Wrong answer
-                    // }
+                    /* GIFT Format
+                    ::Question Title
+                    ::Question{
+                    =Correct answer
+                    ~Wrong answer
+                    ~Wrong answer
+                    ~Wrong answer
+                    }
+                    */
                     
                     // giftContent += `::${header}\n::${question.trim()}\n{\n`;
-                    giftContent += `::${header}\n::${question.trim()}{\n`;
-                    
-                    // // First alternative is correct (=)
-                    // giftContent += `    =${alternatives[0]}\n`;
-                    
-                    // // Rest are incorrect (~)
-                    // for (let k = 1; k < alternatives.length; k++) {
-                    //     giftContent += `    ~${alternatives[k]}\n`;
-                    // }
-
+                    giftContent += `::${header}\n::${formatText(question)}{\n`;
 
                     // Salva a resposta correta antes de embaralhar
                     const correctAnswer = alternatives[0];
@@ -329,17 +347,15 @@
                     // Itera com a posição correta agora aleatória
                     for (let k = 0; k < alternatives.length; k++) {
                         if (alternatives[k] === correctAnswer) {
-                            giftContent += `=${alternatives[k].trim()}\n`;
+                            giftContent += '=' + formatText(alternatives[k]) + '\n';
                         } else {
-                            giftContent += `~${alternatives[k].trim()}\n`;
+                            giftContent += '~' + formatText(alternatives[k]) + '\n';
                         }
                     }
                     
                     giftContent += `}\n`;
                 }
             }
-
-
 
 
             if (validQuestions === 0) {
